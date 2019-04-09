@@ -1,0 +1,5 @@
+pubspec.yaml中注意点：
+
+  dependencies: 需要上线时依赖放在这
+
+  dev_dependencies: 开发环境依赖放在这
