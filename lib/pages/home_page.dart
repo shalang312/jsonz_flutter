@@ -77,21 +77,6 @@ class SwiperDiy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 180,
-      child: Swiper(
-        itemBuilder: (BuildContext context, int index) {
-          return Image.network(
-            "${swipDataList[index]['image']}",
-            fit: BoxFit.fill,
-          );
-        },
-        itemCount: 3,
-        pagination: SwiperPagination(),
-        autoplay: true,
-
-  @override
-  Widget build(BuildContext context) {
     // 设备的像素密度
     print("设备的像素密度:${ScreenUtil.pixelRatio}");
     print("设备的高:${ScreenUtil.screenHeight}");
