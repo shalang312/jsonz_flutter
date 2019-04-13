@@ -37,7 +37,7 @@ class _IndexPageState extends State<IndexPage> {
   ];
 
   // 页面集合
-  final List tabBodies = [
+  final List<Widget> tabBodies = [
     HomePage(),
     CategoryPage(),
     CartPage(),
@@ -46,6 +46,7 @@ class _IndexPageState extends State<IndexPage> {
 
   // 索引
   int currentIndex = 0;
+
   // 当前选择页面
   var currentPage;
 
@@ -74,7 +75,13 @@ class _IndexPageState extends State<IndexPage> {
           });
         },
       ),
-      body: currentPage,
+      /*
+      为了实现切换页面后，页面状态保持的效果
+       */
+      body: IndexedStack(
+        index: currentIndex,
+        children: tabBodies,
+      ),
     );
   }
 }
