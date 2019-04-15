@@ -4,6 +4,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'dart:convert';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,6 +25,9 @@ class _HomePageState extends State<HomePage>
   int page = 1;
   List<Map> hotGoodsList = [];
 
+  GlobalKey<RefreshFooterState> _footerKey =
+      new GlobalKey<RefreshFooterState>();
+
   // 有了banner之后，就不需要初始化状态了
   @override
   void initState() {
@@ -33,7 +37,7 @@ class _HomePageState extends State<HomePage>
 //      });
 //    });
     super.initState();
-    _getHotGoods();
+//    _getHotGoods();
   }
 
   @override
@@ -86,8 +90,19 @@ class _HomePageState extends State<HomePage>
                   (data['data']['floor2'] as List).cast(); //楼层2商品和图片
               List<Map> floor3 =
                   (data['data']['floor3'] as List).cast(); //楼层3商品和图片
-              return SingleChildScrollView(
-                child: Column(
+              return EasyRefresh(
+                refreshFooter: ClassicsFooter(
+                  key: _footerKey,
+                  bgColor: Colors.white,
+                  textColor: Colors.pink,
+                  moreInfoColor: Colors.pink,
+                  showMore: true,
+                  noMoreText: '',
+                  moreInfo: '加载中......',
+                  loadReadyText: '上拉加载.......',
+                ),
+                child: ListView(
+                  //                child: Column(
                   children: <Widget>[
                     SwiperDiy(
                       swipDataList: swiper,
@@ -107,7 +122,21 @@ class _HomePageState extends State<HomePage>
                     _hotGoods(),
 //                    HotGoods(),
                   ],
+//                ),
                 ),
+                loadMore: () async {
+                  print('开始加载更多数据...........');
+                  var formData = {'page': page};
+                  await request("homePageBelowContent", formData: formData)
+                      .then((val) {
+                    var data = json.decode(val.toString());
+                    List<Map> newGoods = (data['data'] as List).cast();
+                    setState(() {
+                      hotGoodsList.addAll(newGoods);
+                      page++;
+                    });
+                  });
+                },
               );
             } else {
               return Center(
@@ -121,17 +150,18 @@ class _HomePageState extends State<HomePage>
   }
 
   // 获取热销商品数据
-  void _getHotGoods() {
-    var formData = {'page': page};
-    request("homePageBelowContent", formData: formData).then((val) {
-      var data = json.decode(val.toString());
-      List<Map> newGoods = (data['data'] as List).cast();
-      setState(() {
-        hotGoodsList.addAll(newGoods);
-        page++;
-      });
-    });
-  }
+  // 转移到上拉加载位置
+//  void _getHotGoods() {
+//    var formData = {'page': page};
+//    request("homePageBelowContent", formData: formData).then((val) {
+//      var data = json.decode(val.toString());
+//      List<Map> newGoods = (data['data'] as List).cast();
+//      setState(() {
+//        hotGoodsList.addAll(newGoods);
+//        page++;
+//      });
+//    });
+//  }
 
   // 变量形式的控件
   // 火爆专区标题
@@ -294,6 +324,8 @@ class TopNavigator extends StatelessWidget {
       height: ScreenUtil().setHeight(320),
       padding: EdgeInsets.all(3),
       child: GridView.count(
+        // 禁止gridview拉动效果，防止和listview滑动冲突
+        physics: NeverScrollableScrollPhysics(),
         // 每行数量，会自动根据返回的数据计算多少行
         crossAxisCount: 5,
         padding: EdgeInsets.all(5),
