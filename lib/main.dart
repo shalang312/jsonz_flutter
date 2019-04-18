@@ -3,17 +3,20 @@ import 'pages/index_page.dart';
 import 'package:provide/provide.dart';
 import 'package:jsonz_flutter/provide/counter.dart';
 import 'package:jsonz_flutter/provide/child_category.dart';
+import 'package:jsonz_flutter/provide/category_goods_list.dart';
 
 void main() {
   // 然后进行将provide和counter引入程序顶层。
   var counter = Counter();
   var childCategory = ChildCategory();
+  var categoryGoodsList = CategoryGoodsListProvide();
   var providers = Providers();
   // ..表示返回本身对象，即链式使用
   // 泛型调用
   // 将counter对象添加进providers
   providers
     ..provide(Provider<Counter>.value(counter))
+    ..provide(Provider<CategoryGoodsListProvide>.value(categoryGoodsList))
     ..provide(Provider<ChildCategory>.value(childCategory)); // 多种状态管理样式
   // ProviderNode封装了InheritWidget，并且提供了 一个providers容器用于放置状态。
   runApp(ProviderNode(child: MyApp(), providers: providers));
