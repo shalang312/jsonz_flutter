@@ -32,6 +32,7 @@ dependencies:
 #      git: https://github.com/google/flutter-provide.git
   flutter_easyrefresh: ^1.2.7
   provide: ^1.0.2
+  fluttertoast: ^3.0.1
 
 dev_dependencies:
   flutter_test:
