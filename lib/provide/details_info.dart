@@ -6,10 +6,14 @@ import 'dart:convert';
 class DetailsInfoProvide with ChangeNotifier {
   DetailsModel goodInfo = null;
 
+  // 底部tabbar按钮的状态
+  bool isLeft = true;
+  bool isRight = false;
+
   // 从后台获取商品明细信息
-  getGoodsInfo(String id) {
+  getGoodsInfo(String id) async {
     var formData = {'goodId': id};
-    request('getGoodDetailById', formData: formData).then((val) {
+    await request('getGoodDetailById', formData: formData).then((val) {
       var responseData = json.decode(val.toString());
       print('商品明细信息==========>' + responseData.toString());
       goodInfo = DetailsModel.fromJson(responseData);
@@ -17,4 +21,15 @@ class DetailsInfoProvide with ChangeNotifier {
     });
   }
 
+  //改变tabBar的状态
+  changeLeftAndRight(String changeState) {
+    if (changeState == 'left') {
+      isLeft = true;
+      isRight = false;
+    } else {
+      isLeft = false;
+      isRight = true;
+    }
+    notifyListeners();
+  }
 }

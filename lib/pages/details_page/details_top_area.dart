@@ -3,6 +3,7 @@ import 'package:provide/provide.dart';
 import 'package:jsonz_flutter/provide/details_info.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+// 详情页面的大图
 class DetailsTopArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
