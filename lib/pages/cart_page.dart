@@ -1,59 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:provide/provide.dart';
-import 'package:jsonz_flutter/provide/counter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
+  @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  List<String> testList = [];
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Number(),
-            MyButton(),
-          ],
-        ),
+    _show(); // 每次进入前进行显示
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: 500,
+            child: ListView.builder(
+              itemCount: testList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(
+                    testList[index],
+                  ),
+                );
+              },
+            ),
+          ),
+          RaisedButton(
+            onPressed: () {
+              _add();
+            },
+            child: Text('增加'),
+          ),
+          RaisedButton(
+            onPressed: () {
+              _clear();
+            },
+            child: Text('清空'),
+          ),
+        ],
       ),
     );
   }
-}
 
-class Number extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 200),
-      // 使用Provide Widget的形式就可以获取状态，比如现在获取数字的状态
-      child: Provide<Counter>(
-        /*
-        每次通知数据刷新时，builder将会重新构建这个小部件。
-        builder方法接收三个参数，这里主要介绍第二个和第三个。
-        第二个参数child：假如这个小部件足够复杂，内部有一些小部件是不会改变的，
-          那么我们可以将这部分小部件写在Provide的child属性中，让builder不再重复创建这些小部件，以提升性能。
-        第三个参数counter：这个参数代表了我们获取的顶层providers中的状态。
-        scope：通过指定ProviderScope获取该键所对应的状态。在需要使用多个相同类型状态的时候使用。
-         */
-        builder: (context, child, counter) {
-          return Text(
-            '${counter.value}',
-            style: Theme.of(context).textTheme.display1, // 系统自带的style
-          );
-        },
-      ),
-    );
+  void _add() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String temp = '技术';
+    testList.add(temp);
+    prefs.setStringList('testInfo', testList);
+    _show();
   }
-}
 
-class MyButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: RaisedButton(
-        onPressed: () {
-          Provide.value<Counter>(context).increment();
-        },
-        child: Text('递增'),
-      ),
-    );
+  void _show() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (prefs.getStringList('testInfo') != null) {
+        testList = prefs.getStringList('testInfo');
+      }
+    });
+  }
+
+  void _clear() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //prefs.clear(); //全部清空
+    prefs.remove('testInfo');
+    setState(() {
+      testList = [];
+    });
   }
 }

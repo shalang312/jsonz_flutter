@@ -8,6 +8,7 @@ import 'package:fluro/fluro.dart';
 import 'package:jsonz_flutter/router/application.dart';
 import 'package:jsonz_flutter/router/routers.dart';
 import 'package:jsonz_flutter/provide/details_info.dart';
+import 'package:jsonz_flutter/provide/cart.dart';
 
 void main() {
   // 然后进行将provide和counter引入程序顶层。
@@ -15,6 +16,7 @@ void main() {
   var childCategory = ChildCategory();
   var categoryGoodsList = CategoryGoodsListProvide();
   var detailsInfoProvide = DetailsInfoProvide();
+  var cartProvide = CartProvide();
   var providers = Providers();
   // 初始化路由
   final router = Router();
@@ -29,6 +31,7 @@ void main() {
     ..provide(Provider<Counter>.value(counter))
     ..provide(Provider<CategoryGoodsListProvide>.value(categoryGoodsList))
     ..provide(Provider<DetailsInfoProvide>.value(detailsInfoProvide))
+    ..provide(Provider<CartProvide>.value(cartProvide))
     ..provide(Provider<ChildCategory>.value(childCategory)); // 多种状态管理样式
   // ProviderNode封装了InheritWidget，并且提供了 一个providers容器用于放置状态。
   runApp(ProviderNode(child: MyApp(), providers: providers));
