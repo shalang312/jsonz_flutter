@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jsonz_flutter/model/cartInfo.dart';
+import 'package:jsonz_flutter/pages/cart_page/cart_count.dart';
+import 'package:jsonz_flutter/provide/cart.dart';
+import 'package:provide/provide.dart';
 
 class CartInfo extends StatelessWidget {
   CartInfoMode item;
@@ -23,22 +26,25 @@ class CartInfo extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          _cartCheckBt(item),
+          _cartCheckBt(context, item),
           _cartImage(item),
           _cartGoodsName(item),
-          _cartPrice(item),
+          _cartPrice(context, item),
         ],
       ),
     );
   }
 
   // 多选按钮
-  Widget _cartCheckBt(CartInfoMode item) {
+  Widget _cartCheckBt(BuildContext context, CartInfoMode item) {
     return Container(
       child: Checkbox(
         // 选中状态
-        value: true,
-        onChanged: (bool val) {}, // 点击变换
+        value: item.isCheck,
+        onChanged: (bool val) {
+          item.isCheck = val;
+          Provide.value<CartProvide>(context).changeCheckState(item);
+        }, // 点击变换
         // 选中时颜色变换
         activeColor: Colors.pink,
       ),
@@ -68,13 +74,14 @@ class CartInfo extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Text(item.goodsName),
+          CartCount(),
         ],
       ),
     );
   }
 
   // 商品价格
-  Widget _cartPrice(CartInfoMode item) {
+  Widget _cartPrice(BuildContext context, CartInfoMode item) {
     return Container(
       width: ScreenUtil().setWidth(150),
       alignment: Alignment.centerRight,
@@ -83,7 +90,10 @@ class CartInfo extends StatelessWidget {
           Text('￥${item.price}'),
           Container(
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Provide.value<CartProvide>(context)
+                    .deleteOneGoods(item.goodsId);
+              },
               child: Icon(
                 Icons.delete_forever,
                 color: Colors.black26,
