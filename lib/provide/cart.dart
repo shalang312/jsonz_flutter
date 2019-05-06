@@ -22,6 +22,11 @@ class CartProvide with ChangeNotifier {
     //声明变量，用于判断购物车中是否已经存在此商品ID
     var isHave = false; // 默认为没有
     int iIndex = 0; // 进行循环的索引
+
+    // 初始化数据
+    allPrice = 0;
+    allGoodsCount = 0;
+
     // item 相当于购物车列表中的每一栏条目
     tempList.forEach((item) {
       // 如果存在，数量进行+1操作
@@ -29,6 +34,10 @@ class CartProvide with ChangeNotifier {
         tempList[iIndex]['count'] = item['count'] + 1;
         cartList[iIndex].count++;
         isHave = true;
+      }
+      if (item['isCheck']) {
+        allPrice += (cartList[iIndex].price * cartList[iIndex].count);
+        allGoodsCount += cartList[iIndex].count;
       }
       iIndex++;
     });
@@ -44,6 +53,10 @@ class CartProvide with ChangeNotifier {
       };
       tempList.add(newGoods);
       cartList.add(CartInfoMode.fromJson(newGoods));
+
+      allPrice += (count * price);
+      allGoodsCount += count;
+
 //      tempList.add({
 //        'goodsId': goodsId,
 //        'goodsName': goodsName,
@@ -159,4 +172,46 @@ class CartProvide with ChangeNotifier {
     await getCartInfo();
   }
 
+  // 点击商品数量加减操作
+  /**
+   * cartItem:要修改的项.
+   *  todo: 是加还是减。
+   */
+  addOrReduceAction(CartInfoMode cartItem, String todo) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    cartString = prefs.getString('cartInfo');
+    List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+    int tempIndex = 0;
+    int changeIndex = 0;
+    tempList.forEach((item) {
+      if (item['goodsId'] == cartItem.goodsId) {
+        changeIndex = tempIndex;
+      }
+      tempIndex++;
+    });
+    if (todo == 'add') {
+      cartItem.count++;
+    } else {
+      cartItem.count--;
+    }
+    tempList[changeIndex] = cartItem.toJson();
+    cartString = json.encode(tempList).toString();
+    prefs.setString('cartInfo', cartString);
+    await getCartInfo();
+  }
+
+  /*
+  提取公共代码
+   */
+  Future<List<Map>> getMapListFromSP(SharedPreferences prefs) async {
+    cartString = prefs.getString('cartInfo');
+    List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+    return tempList;
+  }
+
+  void putDataToSP(List<Map> tempList, SharedPreferences prefs) async {
+    cartString = json.encode(tempList).toString();
+    prefs.setString('cartInfo', cartString); //
+    await getCartInfo();
+  }
 }

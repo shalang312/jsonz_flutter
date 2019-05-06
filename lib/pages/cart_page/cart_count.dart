@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provide/provide.dart';
+import 'package:jsonz_flutter/provide/cart.dart';
+import 'package:jsonz_flutter/model/cartInfo.dart';
 
 class CartCount extends StatelessWidget {
+  CartInfoMode item;
+
+  CartCount(this.item);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -11,27 +18,29 @@ class CartCount extends StatelessWidget {
           BoxDecoration(border: Border.all(width: 1, color: Colors.black12)),
       child: Row(
         children: <Widget>[
-          _reduceBtn(),
+          _reduceBtn(context),
           _countArea(),
-          _addBtn(),
+          _addBtn(context),
         ],
       ),
     );
   }
 
   // 减少按钮
-  Widget _reduceBtn() {
+  Widget _reduceBtn(context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Provide.value<CartProvide>(context).addOrReduceAction(item, 'reduce');
+      },
       child: Container(
         width: ScreenUtil().setWidth(45),
         height: ScreenUtil().setHeight(45),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: item.count > 1 ? Colors.white : Colors.black12,
           border: Border(right: BorderSide(width: 1, color: Colors.black12)),
         ),
-        child: Text('-'),
+        child: item.count > 1 ? Text('-') : Text(''),
       ),
     );
   }
@@ -43,14 +52,16 @@ class CartCount extends StatelessWidget {
       height: ScreenUtil().setHeight(45),
       alignment: Alignment.center,
       color: Colors.white,
-      child: Text('1'),
+      child: Text('${item.count}'),
     );
   }
 
   // 添加按钮
-  Widget _addBtn() {
+  Widget _addBtn(context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Provide.value<CartProvide>(context).addOrReduceAction(item, 'add');
+      },
       child: Container(
         width: ScreenUtil().setWidth(45),
         height: ScreenUtil().setHeight(45),
@@ -62,5 +73,4 @@ class CartCount extends StatelessWidget {
       ),
     );
   }
-
 }
